@@ -233,3 +233,70 @@ Make exits with:
 2
 ```
 
+#### = vs :=
+
+**=** is lazy assignment
+```
+A=$(B)
+B=hello
+```
+
+Here with `=` operator, when control reaches to this line, it does not try to evaluate `$(B)` immediately, but it just knows that whatever is or will be the value of `B` is the value `A` will have.
+
+So control will reach to next line:
+```
+B=hello
+```
+And will store *hello* into variable `B`, and when `A` will be used it will also have the same value.
+
+**:=** immediate assignment  
+```
+A:=$(B)
+B:=hello
+```
+With operator `:=` we are telling `make` to evaluate the value of this variable RN.
+Here when control reaches to first line, it does not know whats the value of variable `B`, but `:=` operator forces `make` to resolve it at that moment only, thus it will evaluate to something, but not value of `B`.
+
+
+- `=` - Define variable
+- `:=` - Calculate the value and assign immediately
+
+
+#### $(shell ...)
+```
+PLATFORM := $(shell ./what-platform)
+```
+
+`make` runs the provided file/script using shell and substitutes with its output into the Makefile expression.  
+
+#### $(shell ...) + sed
+```
+DIST := $(shell ./what-platform | sed \
+        -e `s/rhel\|centos/el' \
+        -e 's/sles\|leap/suse/' \
+        -e 's/\..*//')
+```
+This is Make executing a normal Unix pipeline:
+```
+./what-platform
+       ↓
+      sed
+       ↓
+ transformed result
+```
+Suppose:
+```
+./what-platform
+```
+returns:
+```
+rhel9.4
+```
+Then:
+```
+sed -e 's/rhel\|centos/el/' -e 's/\..*//'
+```
+turns it approximately into:
+```
+el9
+```
