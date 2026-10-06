@@ -300,3 +300,50 @@ turns it approximately into:
 ```
 el9
 ```
+
+
+#### $(error ...)
+*error* is a make function, which stops the makefile execution immediately and prints the error.
+
+```
+ifndef IE_BUILD
+$(error IE_BUILD is not set.)
+endif
+```
+
+
+#### Conditionals - ifndef, ifneq, endif
+
+These are **make conditionals**
+
+**ifneq** - If two values are not equal
+```
+ifneq ($(MAKECMDGOALS), clean)
+```
+
+**ifndef** - If not defined
+```
+ifndef IE_BUILD
+```
+
+#### `%` pattern rules
+```
+%: %.in
+```
+It means - For any `X`, if `X.in` exists, use `X.in` to generate `X`.
+
+```
+$(@:=.in)
+```
+This line is transforming the target name.
+```
+$(@)
+```
+returns current target name for example `policy.in`, so;
+```
+$(@:=.in) > $@
+```
+turns that into:
+```
+policy
+```
